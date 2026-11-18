@@ -1,9 +1,9 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import Cookies from 'js-cookie'
 import BeatLoader from 'react-spinners/BeatLoader'
 
 import ProductCard from '../ProductCard'
-
+import { apiUrl } from '../../api'
 import './index.css'
 import ProductsHeader from '../ProductsHeader'
 import FiltersGroup from '../FiltersGroup'
@@ -99,16 +99,16 @@ const AllProductsSection = () => {
         },
         method: 'GET',
       }
-      const apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}&category=${activeCategoryId}&title_search=${searchInput}&rating=${activeRatingId}`
-      const response = await fetch(apiUrl, options)
+      const url = apiUrl('/api/product/?sort_by=${activeOptionId}')
+      const response = await fetch(url)
       if (response.ok) {
         const fetchedData = await response.json()
-        const formattedData = fetchedData.products.map(product => ({
+        const formattedData = fetchedData.results.map(product => ({
           title: product.title,
           brand: product.brand,
           price: product.price,
           id: product.id,
-          imageUrl: product.image_url,
+          imageUrl: product.imageUrl,
           rating: product.rating,
         }))
         setProductsList(formattedData)
