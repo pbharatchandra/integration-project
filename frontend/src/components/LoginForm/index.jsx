@@ -1,9 +1,9 @@
-import {useState} from 'react'
-import {useNavigate, Navigate} from 'react-router'
+import { useState } from 'react'
+import { useNavigate, Navigate } from 'react-router'
 import Cookies from 'js-cookie'
 
 import './index.css'
-
+import { apiFetch, getAccessToken, getRefreshToken } from '../../api'
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -50,9 +50,9 @@ const LoginForm = () => {
       />
     </>
   )
-  const onSubmitSuccess = jwtToken => {
-    Cookies.set('jwt_token', jwtToken, {expires: 30})
-    navigate('/', {replace: true})
+  const onSubmitSuccess = tokens => {
+    saveTokens(tokens)
+    navigate('/', { replace: true })
   }
   const onSubmitFailure = errorMsg => {
     setShowSubmitError(true)
@@ -61,21 +61,20 @@ const LoginForm = () => {
 
   const submitForm = async event => {
     event.preventDefault()
-    const userDetails = {username: username, password: password}
-    const url = 'https://apis.ccbp.in/login'
-    const options = {
+    const userDetails = { username: username, password: password }
+    const response = await apiFetch('/api/users/login/', {
       method: 'POST',
-      body: JSON.stringify(userDetails),
-    }
-    const response = await fetch(url, options)
+      body: JSON.stringify(userDetails)
+    })
+
     const data = await response.json()
     if (response.ok === true) {
-      onSubmitSuccess(data.jwt_token)
+      onSubmitSuccess({ access: data.access, refresh: data.refresh })
     } else {
-      onSubmitFailure(data.error_msg)
+      onSubmitFailure(data.detail ?? 'Login failed. Please try again.')
     }
   }
-  if (Cookies.get('jwt_token') !== undefined) {
+  if (getAccessToken() !== undefined) {
     return <Navigate to="/" />
   }
   return (
