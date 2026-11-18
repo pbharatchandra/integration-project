@@ -3,7 +3,7 @@ import { useNavigate, Navigate } from 'react-router'
 import Cookies from 'js-cookie'
 
 import './index.css'
-import { apiFetch, getAccessToken, getRefreshToken } from '../../api'
+import { apiFetch, getAccessToken, saveTokens } from '../../api'
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
