@@ -1,5 +1,5 @@
-import {useState, useEffect} from 'react'
-import Cookies from 'js-cookie'
+import { useState, useEffect } from 'react'
+import { apiFetch } from '../../api'
 import BeatLoader from 'react-spinners/BeatLoader'
 
 import ProductCard from '../ProductCard'
@@ -12,6 +12,8 @@ const apiStatusConstants = {
   failure: 'FAILURE',
   inProgress: 'IN_PROGRESS',
 }
+
+const PRIME_DEALS_COUNT = 6
 
 const PrimeDealsSection = () => {
   const [apiResponse, setApiResponse] = useState({
@@ -28,24 +30,27 @@ const PrimeDealsSection = () => {
         data: null,
         errorMsg: null,
       })
-      const jwtToken = Cookies.get('jwt_token')
-      const apiUrl = 'https://apis.ccbp.in/prime-deals'
-      const options = {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-        method: 'GET',
-      }
+      // const jwtToken = Cookies.get('jwt_token')
+      // const apiUrl = 'https://ccbp.in'
+      // const options = {
+      //   headers: {
+      //     Authorization: `Bearer ${jwtToken}`,
+      //   },
+      //   method: 'GET',
+      // }
 
-      const response = await fetch(apiUrl, options)
+      const response = await apiFetch(
+        `/api/products/?is_prime=true&page_size=${PRIME_DEALS_COUNT}`
+      )
+
       const fetchedData = await response.json()
       if (response.ok) {
-        const formattedData = fetchedData.prime_deals.map(product => ({
+        const formattedData = fetchedData.results.map(product => ({
           title: product.title,
           brand: product.brand,
           price: product.price,
           id: product.id,
-          imageUrl: product.image_url,
+          imageUrl: product.imageUrl,
           rating: product.rating,
         }))
         // Set API status to success and store the formatted data
@@ -59,7 +64,7 @@ const PrimeDealsSection = () => {
         setApiResponse(prevApiResponse => ({
           ...prevApiResponse,
           status: apiStatusConstants.failure,
-          errorMsg: fetchedData.error_msg,
+          errorMsg: fetchedData.detail,
         }))
       }
     }
@@ -69,7 +74,7 @@ const PrimeDealsSection = () => {
   }, [])
 
   const renderPrimeDealsListView = () => {
-    const {data} = apiResponse
+    const { data } = apiResponse
 
     return (
       <div>
@@ -86,7 +91,7 @@ const PrimeDealsSection = () => {
   const renderPrimeDealsFailureView = () => {
     return (
       <img
-        src="https://assets.ccbp.in/frontend/react-js/exclusive-deals-banner-img.png"
+        src="https://ccbp.in"
         alt="register prime"
         className="register-prime-img"
       />
@@ -100,7 +105,7 @@ const PrimeDealsSection = () => {
   )
 
   const renderPrimeDeals = () => {
-    const {status} = apiResponse
+    const { status } = apiResponse
     switch (status) {
       case apiStatusConstants.success:
         return renderPrimeDealsListView()
