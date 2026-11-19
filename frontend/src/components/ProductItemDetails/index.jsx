@@ -20,7 +20,6 @@ const apiStatusConstants = {
 
 const ProductItemDetails = () => {
   const [productData, setProductData] = useState({})
-  const [similarProductsData, setSimilarProductsData] = useState([])
   const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
   const [quantity, setQuantity] = useState(1)
   const {id} = useParams()
@@ -32,15 +31,12 @@ const ProductItemDetails = () => {
   }
 
   const getFormattedData = data => ({
-    availability: data.availability,
     brand: data.brand,
-    description: data.description,
     id: data.id,
     imageUrl: data.image_url,
     price: data.price,
     rating: data.rating,
     title: data.title,
-    totalReviews: data.total_reviews,
   })
 
   useEffect(() => {
@@ -59,11 +55,7 @@ const ProductItemDetails = () => {
       if (response.ok) {
         const fetchedData = await response.json()
         const updatedData = getFormattedData(fetchedData)
-        const updatedSimilarProductsData = fetchedData.similar_products.map(
-          eachSimilarProduct => getFormattedData(eachSimilarProduct),
-        )
         setProductData(updatedData)
-        setSimilarProductsData(updatedSimilarProductsData)
         setApiStatus(apiStatusConstants.success)
       } else {
         setApiStatus(apiStatusConstants.failure)
@@ -132,13 +124,8 @@ const ProductItemDetails = () => {
                   className="star"
                 />
               </div>
-              <p className="reviews-count">{totalReviews} Reviews</p>
             </div>
-            <p className="product-description">{description}</p>
-            <div className="label-value-container">
-              <p className="label">Available:</p>
-              <p className="value">{availability}</p>
-            </div>
+           
             <div className="label-value-container">
               <p className="label">Brand:</p>
               <p className="value">{brand}</p>
@@ -178,15 +165,7 @@ const ProductItemDetails = () => {
             </button>
           </div>
         </div>
-        <h1 className="similar-products-heading">Similar Products</h1>
-        <ul className="similar-products-list">
-          {similarProductsData.map(eachSimilarProduct => (
-            <SimilarProductItem
-              productDetails={eachSimilarProduct}
-              key={eachSimilarProduct.id}
-            />
-          ))}
-        </ul>
+        
       </div>
     )
   }

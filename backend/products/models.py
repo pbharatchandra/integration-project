@@ -12,6 +12,12 @@ class Product(models.Model):
     rating = models.FloatField(default=0.0)
     is_prime    = models.BooleanField(default=False)   # ← new!
 
+    # Details-page fields. The list page never shows them, the details page
+    # needs all three.
+    description   = models.TextField(blank=True, default='')
+    availability  = models.CharField(max_length=50, blank=True, default='In Stock')
+    total_reviews = models.IntegerField(default=0)
+
     seller = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

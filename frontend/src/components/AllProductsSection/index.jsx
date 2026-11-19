@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
-import Cookies from 'js-cookie'
+import {useState, useEffect} from 'react'
 import BeatLoader from 'react-spinners/BeatLoader'
 
 import ProductCard from '../ProductCard'
-import { apiUrl } from '../../api'
+import {apiUrl} from '../../api'
+
 import './index.css'
+
 import ProductsHeader from '../ProductsHeader'
 import FiltersGroup from '../FiltersGroup'
 
@@ -92,17 +93,15 @@ const AllProductsSection = () => {
   useEffect(() => {
     const getProducts = async () => {
       setIsLoading(true)
-      const jwtToken = Cookies.get('jwt_token')
-      const options = {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-        method: 'GET',
-      }
-      const url = apiUrl('/api/product/?sort_by=${activeOptionId}')
+      // Same request, now aimed at our own Django backend instead of apis.ccbp.in
+
+      const url = apiUrl(
+        `/api/products/?page=${currentPage}&sort_by=${activeOptionId}&category=${activeCategoryId}&title_search=${searchInput}&rating=${activeRatingId}`,
+      )
       const response = await fetch(url)
       if (response.ok) {
         const fetchedData = await response.json()
+        // DRF pagination wraps the rows in `results`
         const formattedData = fetchedData.results.map(product => ({
           title: product.title,
           brand: product.brand,

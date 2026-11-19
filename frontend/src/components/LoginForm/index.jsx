@@ -1,9 +1,10 @@
-import { useState } from 'react'
-import { useNavigate, Navigate } from 'react-router'
-import Cookies from 'js-cookie'
+import {useState} from 'react'
+import {useNavigate, Navigate} from 'react-router'
+
+import {apiFetch, saveTokens, getAccessToken} from '../../api'
 
 import './index.css'
-import { apiFetch, getAccessToken, saveTokens } from '../../api'
+
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -50,27 +51,31 @@ const LoginForm = () => {
       />
     </>
   )
+  // Django's login returns a *pair* of tokens, so we keep both.
   const onSubmitSuccess = tokens => {
     saveTokens(tokens)
-    navigate('/', { replace: true })
+    navigate('/', {replace: true})
   }
-  const onSubmitFailure = errorMsg => {
+  const onSubmitFailure = message => {
     setShowSubmitError(true)
-    setErrorMsg(errorMsg)
+    setErrorMsg(message)
   }
 
   const submitForm = async event => {
     event.preventDefault()
-    const userDetails = { username: username, password: password }
+    const userDetails = {username, password}
+    // POST /api/users/login/ — the only request in the app that sends a
+    // password. Everything after this sends the token instead.
     const response = await apiFetch('/api/users/login/', {
       method: 'POST',
-      body: JSON.stringify(userDetails)
+      body: JSON.stringify(userDetails),
     })
-
     const data = await response.json()
     if (response.ok === true) {
-      onSubmitSuccess({ access: data.access, refresh: data.refresh })
+      // SimpleJWT answers with {access, refresh}
+      onSubmitSuccess({access: data.access, refresh: data.refresh})
     } else {
+      // ...and puts its failure message in `detail`, not `error_msg`
       onSubmitFailure(data.detail ?? 'Login failed. Please try again.')
     }
   }

@@ -7,10 +7,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import ProductPagination
 from .permissions import IsSellerOrReadOnly as IsSeller
 
-
 # Create your views here.
 class ProductListView(ListCreateAPIView):
-    queryset         = Product.objects.all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter,filters.OrderingFilter]
@@ -25,7 +24,7 @@ class ProductListView(ListCreateAPIView):
 
 
 class ProductDetailView(RetrieveUpdateDestroyAPIView):
-    queryset         = Product.objects.all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     permission_classes = [IsSeller]   # ← the lock

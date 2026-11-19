@@ -1,9 +1,16 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import RegisterSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 from rest_framework.permissions import IsAuthenticated
+
+# The two names LogoutView needs. Without these imports, logging out blows up
+# with NameError the moment the view runs.
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 class RegisterView(APIView):

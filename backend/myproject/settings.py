@@ -31,11 +31,15 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.drops.nxtwave.tech",
 ]
 
+# Tell the browser which origins are allowed to read our responses (CORS).
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 
 # Application definition
 
 INSTALLED_APPS = [
-    #added cors headers
     'corsheaders',
     'users',
     'django.contrib.admin',
@@ -159,6 +163,3 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]

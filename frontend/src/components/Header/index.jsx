@@ -1,22 +1,31 @@
-import { Link } from 'react-router'
-import { apiFetch, clearTokens, getRefreshToken } from '../../api'
-import { useNavigate } from 'react-router'
+import {Link} from 'react-router'
+import {useNavigate} from 'react-router'
 
 import CartContext from '../../context/CartContext'
 
+import {apiFetch, clearTokens, getRefreshToken} from '../../api'
+
 import './index.css'
-import { useContext } from 'react'
+import {useContext} from 'react'
 
 const Header = () => {
   const navigate = useNavigate()
   const value = useContext(CartContext)
-  const { cartList } = value
+  const {cartList} = value
 
-  const onClickLogout = () => {
-    Cookies.remove('jwt_token')
-    navigate('/login', { replace: true })
+  const onClickLogout = async () => {
+    // Step 1 — tell Django to end the session (it blacklists the refresh token)
+    const refresh = getRefreshToken()
+    if (refresh !== undefined) {
+      await apiFetch('/api/users/logout/', {
+        method: 'POST',
+        body: JSON.stringify({refresh}),
+      })
+    }
+    // Step 2 — only now forget the tokens in this browser
+    clearTokens()
+    navigate('/login', {replace: true})
   }
-
   const renderCartItemsCount = () => {
     const cartListCount = cartList.length
     return (
