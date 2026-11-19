@@ -1,21 +1,22 @@
-import {Link} from 'react-router'
-import Cookies from 'js-cookie'
-import {useNavigate} from 'react-router'
+import { Link } from 'react-router'
+import { apiFetch, clearTokens, getRefreshToken } from '../../api'
+import { useNavigate } from 'react-router'
 
 import CartContext from '../../context/CartContext'
 
 import './index.css'
-import {useContext} from 'react'
+import { useContext } from 'react'
 
 const Header = () => {
   const navigate = useNavigate()
   const value = useContext(CartContext)
-  const {cartList} = value
+  const { cartList } = value
 
   const onClickLogout = () => {
     Cookies.remove('jwt_token')
-    navigate('/login', {replace: true})
+    navigate('/login', { replace: true })
   }
+
   const renderCartItemsCount = () => {
     const cartListCount = cartList.length
     return (

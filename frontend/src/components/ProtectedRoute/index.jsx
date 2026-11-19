@@ -1,8 +1,8 @@
-import {Navigate} from 'react-router'
-import Cookies from 'js-cookie'
+import { Navigate } from 'react-router'
+import { getAccessToken } from '../../api'
 
-const ProtectedRoute = ({children}) => {
-  const token = Cookies.get('jwt_token')
+const ProtectedRoute = ({ children }) => {
+  const token = getAccessToken()
   if (token === undefined) {
     return <Navigate to="/login" replace />
   }
