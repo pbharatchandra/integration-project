@@ -76,17 +76,16 @@ const App = () => {
           <Route
             path="/products"
             element={
-           
+
                 <Products />
-         
             }
           />
           <Route
             path="/products/:id"
             element={
-              <ProtectedRoute>
+           
                 <ProductItemDetails />
-              </ProtectedRoute>
+           
             }
           />
           <Route

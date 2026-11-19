@@ -15,9 +15,9 @@ export const getAccessToken = () => Cookies.get(ACCESS_TOKEN_KEY)
 
 export const getRefreshToken = () => Cookies.get(REFRESH_TOKEN_KEY)
 
-export const saveTokens = ({ access, refresh }) => {
-  Cookies.set(ACCESS_TOKEN_KEY, access, { expires: 30 })
-  Cookies.set(REFRESH_TOKEN_KEY, refresh, { expires: 30 })
+export const saveTokens = ({access, refresh}) => {
+  Cookies.set(ACCESS_TOKEN_KEY, access, {expires: 30})
+  Cookies.set(REFRESH_TOKEN_KEY, refresh, {expires: 30})
 }
 
 export const clearTokens = () => {
@@ -43,5 +43,5 @@ export const apiFetch = (path, options = {}) => {
     headers.Authorization = `Bearer ${token}`
   }
 
-  return fetch(apiUrl(path), { ...options, headers })
+  return fetch(apiUrl(path), {...options, headers})
 }

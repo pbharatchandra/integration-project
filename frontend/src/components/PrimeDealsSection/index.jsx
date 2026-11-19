@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
-import { apiFetch } from '../../api'
+import {useState, useEffect} from 'react'
 import BeatLoader from 'react-spinners/BeatLoader'
 
 import ProductCard from '../ProductCard'
+
+import {apiFetch} from '../../api'
 
 import './index.css'
 
@@ -13,6 +14,8 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
+// The deals strip is a teaser, not a browsable list. Ask for as many as it has
+// room for — otherwise DRF's default page of 5 quietly decides for us.
 const PRIME_DEALS_COUNT = 6
 
 const PrimeDealsSection = () => {
@@ -30,21 +33,17 @@ const PrimeDealsSection = () => {
         data: null,
         errorMsg: null,
       })
-      // const jwtToken = Cookies.get('jwt_token')
-      // const apiUrl = 'https://ccbp.in'
-      // const options = {
-      //   headers: {
-      //     Authorization: `Bearer ${jwtToken}`,
-      //   },
-      //   method: 'GET',
-      // }
 
+      // apiFetch adds the base URL and the Authorization header for us.
+      // ?is_prime=true is the whole request — the same products endpoint,
+      // asked a narrower question.
       const response = await apiFetch(
-        `/api/products/?is_prime=true&page_size=${PRIME_DEALS_COUNT}`
+        `/api/products/?is_prime=true&page_size=${PRIME_DEALS_COUNT}`,
       )
-
       const fetchedData = await response.json()
       if (response.ok) {
+        // DRF pagination wraps the rows in `results`, and our serializer
+        // already sends imageUrl.
         const formattedData = fetchedData.results.map(product => ({
           title: product.title,
           brand: product.brand,
@@ -60,7 +59,9 @@ const PrimeDealsSection = () => {
           data: formattedData,
         }))
       } else {
-        // If response is not successful, set API status to failure and store the error message
+        // A 401 lands here: no token, or an expired one. The failure view is
+        // the "register for Prime" banner — exactly the right thing to show
+        // someone who is not entitled to the deals.
         setApiResponse(prevApiResponse => ({
           ...prevApiResponse,
           status: apiStatusConstants.failure,
@@ -74,7 +75,7 @@ const PrimeDealsSection = () => {
   }, [])
 
   const renderPrimeDealsListView = () => {
-    const { data } = apiResponse
+    const {data} = apiResponse
 
     return (
       <div>
@@ -91,7 +92,7 @@ const PrimeDealsSection = () => {
   const renderPrimeDealsFailureView = () => {
     return (
       <img
-        src="https://ccbp.in"
+        src="https://assets.ccbp.in/frontend/react-js/exclusive-deals-banner-img.png"
         alt="register prime"
         className="register-prime-img"
       />
@@ -105,7 +106,7 @@ const PrimeDealsSection = () => {
   )
 
   const renderPrimeDeals = () => {
-    const { status } = apiResponse
+    const {status} = apiResponse
     switch (status) {
       case apiStatusConstants.success:
         return renderPrimeDealsListView()

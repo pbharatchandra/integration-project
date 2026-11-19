@@ -1,13 +1,12 @@
 import {useState, useEffect, useContext} from 'react'
 import {Link, useParams} from 'react-router'
-import Cookies from 'js-cookie'
 import BeatLoader from 'react-spinners/BeatLoader'
 import {BsPlusSquare, BsDashSquare} from 'react-icons/bs'
 
 import CartContext from '../../context/CartContext'
 
 import Header from '../Header'
-import SimilarProductItem from '../SimilarProductItem'
+import {apiFetch} from '../../api'
 
 import './index.css'
 
@@ -30,10 +29,13 @@ const ProductItemDetails = () => {
     addCartItem({...productData, quantity})
   }
 
+  // Only the fields our detail endpoint actually returns. The old API also
+  // sent availability, a description and a review count — ours does not, so
+  // the screen no longer shows them.
   const getFormattedData = data => ({
     brand: data.brand,
     id: data.id,
-    imageUrl: data.image_url,
+    imageUrl: data.imageUrl,
     price: data.price,
     rating: data.rating,
     title: data.title,
@@ -42,22 +44,16 @@ const ProductItemDetails = () => {
   useEffect(() => {
     const getProductData = async () => {
       setApiStatus(apiStatusConstants.inProgress)
-      const jwtToken = Cookies.get('jwt_token')
-      const apiUrl = `https://apis.ccbp.in/products/${id}`
-      const options = {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-        method: 'GET',
-      }
 
-      const response = await fetch(apiUrl, options)
+      const response = await apiFetch(`/api/products/${id}/`)
       if (response.ok) {
         const fetchedData = await response.json()
         const updatedData = getFormattedData(fetchedData)
         setProductData(updatedData)
         setApiStatus(apiStatusConstants.success)
       } else {
+        // A wrong id gives 404 — and so does a prime product asked for without
+        // a login, because the backend hides those rows from visitors.
         setApiStatus(apiStatusConstants.failure)
       }
     }
@@ -97,16 +93,7 @@ const ProductItemDetails = () => {
   )
 
   const renderProductDetailsView = () => {
-    const {
-      availability,
-      brand,
-      description,
-      imageUrl,
-      price,
-      rating,
-      title,
-      totalReviews,
-    } = productData
+    const {brand, imageUrl, price, rating, title} = productData
 
     return (
       <div className="product-details-success-view">
@@ -125,7 +112,6 @@ const ProductItemDetails = () => {
                 />
               </div>
             </div>
-           
             <div className="label-value-container">
               <p className="label">Brand:</p>
               <p className="value">{brand}</p>
@@ -165,7 +151,6 @@ const ProductItemDetails = () => {
             </button>
           </div>
         </div>
-        
       </div>
     )
   }

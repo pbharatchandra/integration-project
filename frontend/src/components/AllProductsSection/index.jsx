@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import BeatLoader from 'react-spinners/BeatLoader'
 
 import ProductCard from '../ProductCard'
+
 import {apiUrl} from '../../api'
 
 import './index.css'
@@ -12,23 +13,23 @@ import FiltersGroup from '../FiltersGroup'
 const categoryOptions = [
   {
     name: 'Clothing',
-    categoryId: '1',
+    categoryId: 1,
   },
   {
     name: 'Electronics',
-    categoryId: '2',
+    categoryId: 2,
   },
   {
     name: 'Appliances',
-    categoryId: '3',
+    categoryId: 3,
   },
   {
     name: 'Grocery',
-    categoryId: '4',
+    categoryId: 4,
   },
   {
     name: 'Toys',
-    categoryId: '5',
+    categoryId: 5,
   },
 ]
 
